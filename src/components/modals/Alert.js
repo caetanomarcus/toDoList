@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import styled from "styled-components";
 
 
@@ -22,14 +22,12 @@ const AlertText = styled.p`
 
 `
 
-
 const Alert = () => {
-
     return (
         <Container>
             <AlertText>Poxa! Você já tem 5 tarefas, não é melhor terminar uma e depois adicionar mais? Não se sobrecarregue! </AlertText>
         </Container>
     )
-}
+};
 
-export default Alert
+export default Alert;

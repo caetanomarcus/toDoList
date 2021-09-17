@@ -17,7 +17,7 @@ const Container = styled.section`
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    filter: ${props => props.haveModal? 'blur(2px)': 'none' };
+    filter: ${props => props.haveModal? 'blur(4px)': 'none' };
    
 
 `;
@@ -186,17 +186,6 @@ const PostitClose = styled.button `
     right: 2%;
     display: none;
 `;
-
-const TrickModalContainer = styled.div `
- position: absolute;
- top: 50%;
- left: 50%;
- transform: translate(-50%, -50%);
- margin: 0;
- background: rgba(0,0,0, .7);
-  
-
-`
 
 const ContainerModal = styled.div `
     width: 40vw;
