@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import styled, { createGlobalStyle } from "styled-components";
 import postit from '../assets/postit.png';
+import Alert from "./modals/Alert";
 
 const GlobalStyle = createGlobalStyle`
     body{
@@ -16,6 +17,9 @@ const Container = styled.section`
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    filter: ${props => props.haveModal? 'blur(2px)': 'none' };
+   
+
 `;
 
 const Title = styled.h1`
@@ -44,7 +48,7 @@ const Main = styled.div`
     align-items: flex-start;
     width: 75%;
 
-    @media(max-width: 480px){
+    @media(max-width: 768px){
         flex-direction: column;
         align-items: center;
     }
@@ -60,21 +64,9 @@ const InputTasks = styled.form`
     padding: 5px;
     position: relative;
 
-    @media(max-width: 480px){
+    @media(max-width: 768px){
        width: 80%;
     }
-
-    /* ::after{
-        content: '';
-        width: 5px;
-        height: 200px;
-        border-left: solid #CD50FA 3px;
-        border-right: solid #CD50FA 3px;
-        position: absolute;
-        right: 0;
-        top: 25%;
-        
-    } */
 `;
 
 const TaskTitle = styled.h2`
@@ -128,8 +120,6 @@ const AddTask = styled.button`
 `;
 
 const DisplayedTasks = styled.div`
-   
-    /* border: solid red 1px; */
     width: 80vw;
     margin: 2rem;
     display: flex;
@@ -139,7 +129,8 @@ const DisplayedTasks = styled.div`
     border-top: double #CD50FA 5px;
     border-radius: 2px;
 
-    @media(max-width: 480px){
+    @media(max-width: 768px){
+        width: 100%;
     }
 `;
 
@@ -168,7 +159,11 @@ const Postit = styled.div `
     position: relative;
     margin: 1.5rem;
     padding: 5px;
+   
 
+    :hover button{
+        display: block;
+    }
 `;
 
 const PostitText = styled.p `
@@ -189,11 +184,53 @@ const PostitClose = styled.button `
     font-weight: bold;
     top: 15%;
     right: 2%;
+    display: none;
+`;
+
+const TrickModalContainer = styled.div `
+ position: absolute;
+ top: 50%;
+ left: 50%;
+ transform: translate(-50%, -50%);
+ margin: 0;
+ background: rgba(0,0,0, .7);
+  
+
+`
+
+const ContainerModal = styled.div `
+    width: 40vw;
+    height: 50vh;
+    background-color: #fff;
+    box-shadow: 2px 2px 5px 1px gray;
+    /* padding: 1rem; */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+
+`;
+
+const ButtonClose = styled.button `
+    background: none;
+    border: none;
+    cursor: pointer;
+    position: absolute;
+    color: red;
+    font-size: 12px;
+    font-weight: bold;
+    top: 2%;
+    right: 1%;
 `;
 
 const ToDo = () => {
-    const [task, setTask] = useState();
+    const [task, setTask] = useState('');
     const [taskList, setTaskList] = useState(JSON.parse(localStorage.getItem('toDos')) || []);
+    const [openModal, setOpenModal] = useState(false);
 
     const generateRandomPostits = () => {
         const randomNumber = Math.floor(Math.random() * 11);
@@ -204,10 +241,19 @@ const ToDo = () => {
 
     const addItems = (e) => {
         e.preventDefault();
-        const willreturn = [...taskList, { task: task, id: Date.now(), rotate: generateRandomPostits() }];
+        if(task !== ''){
+            if(taskList.length < 5){
+                const willreturn = [...taskList, { task: task, id: Date.now(), rotate: generateRandomPostits() }];
         localStorage.setItem('toDos', JSON.stringify(willreturn));
         setTaskList(willreturn);
         setTask('')
+            }
+
+            if (taskList.length === 5){
+                setOpenModal(true);
+            }
+        }
+        
     };
 
     const removeItem = (id) => {
@@ -216,8 +262,23 @@ const ToDo = () => {
         setTaskList(newList);
     };
 
+    const generateModal = (modal) => {
+
+        const handleClick = () => {
+            setOpenModal(false)
+        }
+        return (
+        <ContainerModal>
+            <ButtonClose onClick={handleClick} >X</ButtonClose>
+            {modal}
+        </ContainerModal>
+            
+        )
+    };
+
     return (
-        <Container>
+        <>
+            <Container haveModal={openModal} >
             <GlobalStyle />
             <Title>ToDo List</Title>
             <Main>
@@ -229,9 +290,11 @@ const ToDo = () => {
                         type='text'
                         placeholder="digite sua tarefa"
                         maxLength= '65' 
+                        disabled={openModal}
                         />
                     <AddTask
                         onClick={addItems}
+                        disabled={openModal}
                     >Adicionar</AddTask>
                 </InputTasks>
                 <DisplayedTasks>
@@ -241,12 +304,16 @@ const ToDo = () => {
                             <PostitText>{task.task}</PostitText>
                             <PostitClose
                             onClick={() => removeItem(task.id)}
+                            disabled={openModal}
                             >X</PostitClose>
                         </Postit>)}
                     </TaskList>
                 </DisplayedTasks>
             </Main>
+            
         </Container>
+        {openModal && generateModal(<Alert />)}
+        </>
     )
 }
 
