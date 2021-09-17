@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled, { createGlobalStyle } from "styled-components";
-import postit from '../assets/postit.png'
+import postit from '../assets/postit.png';
 
 const GlobalStyle = createGlobalStyle`
     body{
@@ -43,6 +43,11 @@ const Main = styled.div`
     justify-content: space-between;
     align-items: flex-start;
     width: 75%;
+
+    @media(max-width: 480px){
+        flex-direction: column;
+        align-items: center;
+    }
 `;
 
 const InputTasks = styled.form`
@@ -54,6 +59,10 @@ const InputTasks = styled.form`
     margin: 2rem;
     padding: 5px;
     position: relative;
+
+    @media(max-width: 480px){
+       width: 80%;
+    }
 
     /* ::after{
         content: '';
@@ -129,6 +138,9 @@ const DisplayedTasks = styled.div`
     align-items: center;
     border-top: double #CD50FA 5px;
     border-radius: 2px;
+
+    @media(max-width: 480px){
+    }
 `;
 
 const SecondTitle = styled.h2`
@@ -140,6 +152,7 @@ const TaskList = styled.div `
     display: flex;
     flex-wrap: wrap;
     align-items: center;
+    justify-content: center;
 `;
 
 const Postit = styled.div `
@@ -155,6 +168,7 @@ const Postit = styled.div `
     position: relative;
     margin: 1.5rem;
     padding: 5px;
+
 `;
 
 const PostitText = styled.p `
@@ -179,7 +193,7 @@ const PostitClose = styled.button `
 
 const ToDo = () => {
     const [task, setTask] = useState();
-    const [taskList, setTaskList] = useState([]);
+    const [taskList, setTaskList] = useState(JSON.parse(localStorage.getItem('toDos')) || []);
 
     const generateRandomPostits = () => {
         const randomNumber = Math.floor(Math.random() * 11);
@@ -190,16 +204,17 @@ const ToDo = () => {
 
     const addItems = (e) => {
         e.preventDefault();
-        setTaskList([...taskList, { task: task, id: new Date(), rotate: generateRandomPostits() }]);
+        const willreturn = [...taskList, { task: task, id: Date.now(), rotate: generateRandomPostits() }];
+        localStorage.setItem('toDos', JSON.stringify(willreturn));
+        setTaskList(willreturn);
         setTask('')
     };
 
     const removeItem = (id) => {
         const newList = taskList.filter(item => id !== item.id);
+        localStorage.setItem('toDos', JSON.stringify(newList))
         setTaskList(newList);
     };
-
-    
 
     return (
         <Container>
