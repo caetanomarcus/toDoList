@@ -254,7 +254,7 @@ const ToDo = () => {
     const [isEditable, setIsEditable] = useState(false);
     const [textEditable, setTextEditable] = useState('');
 
-    const inputEl = useRef(null)
+    const inputEl = useRef()
 
     const generateRandomPostits = () => {
         const randomNumber = Math.floor(Math.random() * 11);
@@ -304,9 +304,7 @@ const ToDo = () => {
         setIsEditable(id);
     };
 
-    const handleCliclConfirmEdit = (id) => {
-
-        
+    const handleCliclConfirmEdit = (id) => {        
         const editedTask =  taskList.map( item => {
             if(id === item.id){
                 item.task = textEditable !== ''? textEditable: item.task
@@ -316,15 +314,9 @@ const ToDo = () => {
 
             return item
         });
-
-        console.log(taskList)
-
-        setTaskList(editedTask)
-
+        TaskList(editedTask)
         setIsEditable(0)
-
         localStorage.setItem('toDos', JSON.stringify(editedTask))
-
         setTextEditable('')
     }
 
