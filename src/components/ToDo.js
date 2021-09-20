@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import styled, { createGlobalStyle } from "styled-components";
 import postit from '../assets/postit.png';
+import edit from '../assets/editing.png';
+import check from '../assets/check.png';
 import Alert from "./modals/Alert";
 
 const GlobalStyle = createGlobalStyle`
@@ -187,6 +189,7 @@ const PostitClose = styled.button `
     display: none;
 `;
 
+
 const ContainerModal = styled.div `
     width: 40vw;
     height: 50vh;
@@ -204,7 +207,7 @@ const ContainerModal = styled.div `
 
 `;
 
-const ButtonClose = styled.button `
+const PostitEdit = styled.button `
     background: none;
     border: none;
     cursor: pointer;
@@ -212,14 +215,46 @@ const ButtonClose = styled.button `
     color: red;
     font-size: 12px;
     font-weight: bold;
+    bottom: 18px;
+    right: 0;
+    display: none;
+`
+
+const EditButton = styled.img `
+    width: 20px;
+`;
+
+const CheckButton = styled.img `
+    width: 20px;
+`
+
+const ButtonClose = styled.button `
+    background: none;
+    border: none;
+    cursor: pointer;
+    position: absolute;
+    color: red;
+    font-size: 16px;
+    font-weight: bold;
     top: 2%;
     right: 1%;
+`;
+
+const EditInput = styled.input `
+    width: 80%;
+    border: solid 2px #590479;
+    border-radius: 3px;
+    outline-color: #590479;
 `;
 
 const ToDo = () => {
     const [task, setTask] = useState('');
     const [taskList, setTaskList] = useState(JSON.parse(localStorage.getItem('toDos')) || []);
     const [openModal, setOpenModal] = useState(false);
+    const [isEditable, setIsEditable] = useState(false);
+    const [textEditable, setTextEditable] = useState('');
+
+    const inputEl = useRef(null)
 
     const generateRandomPostits = () => {
         const randomNumber = Math.floor(Math.random() * 11);
@@ -265,6 +300,40 @@ const ToDo = () => {
         )
     };
 
+    const HandleClickEditing = (id) => {
+        setIsEditable(id);
+    };
+
+    const handleCliclConfirmEdit = (id) => {
+
+        
+        const editedTask =  taskList.map( item => {
+            if(id === item.id){
+                item.task = textEditable !== ''? textEditable: item.task
+
+                return item
+            }
+
+            return item
+        });
+
+        console.log(taskList)
+
+        setTaskList(editedTask)
+
+        setIsEditable(0)
+
+        localStorage.setItem('toDos', JSON.stringify(editedTask))
+
+        setTextEditable('')
+    }
+
+    useEffect(() => {
+       if(isEditable){
+        inputEl.current.focus()
+       }
+    },[isEditable])
+
     return (
         <>
             <Container haveModal={openModal} >
@@ -290,11 +359,32 @@ const ToDo = () => {
                     <SecondTitle>Suas tarefas</SecondTitle>
                     <TaskList>
                         {taskList.map( task => <Postit rotate={task.rotate}>
-                            <PostitText>{task.task}</PostitText>
+                            <PostitText
+                            >{isEditable === task.id
+                            ? <EditInput 
+                            type='text' 
+                            maxLength= '65' 
+                            onChange={e => setTextEditable(e.target.value)}
+                            ref={inputEl}
+                            /> 
+                            : task.task}
+                            </PostitText>
                             <PostitClose
                             onClick={() => removeItem(task.id)}
                             disabled={openModal}
                             >X</PostitClose>
+                            {isEditable === task.id
+                            ? <CheckButton 
+                            src={check} 
+                            onClick={() => handleCliclConfirmEdit(task.id)}
+                            />
+                            : <PostitEdit> 
+                                <EditButton 
+                                onClick={ (e)=> HandleClickEditing(task.id, e)} 
+                                src={edit} 
+                            />
+                            </PostitEdit>
+                            }
                         </Postit>)}
                     </TaskList>
                 </DisplayedTasks>
