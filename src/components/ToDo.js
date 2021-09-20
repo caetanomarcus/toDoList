@@ -314,7 +314,7 @@ const ToDo = () => {
 
             return item
         });
-        TaskList(editedTask)
+        setTaskList(editedTask)
         setIsEditable(0)
         localStorage.setItem('toDos', JSON.stringify(editedTask))
         setTextEditable('')
