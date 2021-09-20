@@ -10,6 +10,24 @@ const GlobalStyle = createGlobalStyle`
         margin:0;
         padding: 0;
         box-sizing: border-box;
+
+    
+::-webkit-scrollbar {
+  width: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #E093FC ;
+  
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #B307F1;
+}
        
     }
 `;
@@ -122,7 +140,7 @@ const AddTask = styled.button`
 `;
 
 const DisplayedTasks = styled.div`
-    width: 80vw;
+    width: calc(80vw - 7px);
     margin: 2rem;
     display: flex;
     justify-content: center;
@@ -252,7 +270,7 @@ const ToDo = () => {
     const [taskList, setTaskList] = useState(JSON.parse(localStorage.getItem('toDos')) || []);
     const [openModal, setOpenModal] = useState(false);
     const [isEditable, setIsEditable] = useState(false);
-    const [textEditable, setTextEditable] = useState('');
+    const [textEditaded, setTextEditaded] = useState('');
 
     const inputEl = useRef()
 
@@ -307,7 +325,7 @@ const ToDo = () => {
     const handleCliclConfirmEdit = (id) => {        
         const editedTask =  taskList.map( item => {
             if(id === item.id){
-                item.task = textEditable !== ''? textEditable: item.task
+                item.task = textEditaded !== ''? textEditaded: item.task
 
                 return item
             }
@@ -317,7 +335,7 @@ const ToDo = () => {
         setTaskList(editedTask)
         setIsEditable(0)
         localStorage.setItem('toDos', JSON.stringify(editedTask))
-        setTextEditable('')
+        setTextEditaded('')
     }
 
     useEffect(() => {
@@ -356,7 +374,7 @@ const ToDo = () => {
                             ? <EditInput 
                             type='text' 
                             maxLength= '65' 
-                            onChange={e => setTextEditable(e.target.value)}
+                            onChange={e => setTextEditaded(e.target.value)}
                             ref={inputEl}
                             /> 
                             : task.task}
